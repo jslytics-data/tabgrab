@@ -1,11 +1,9 @@
-// tabgrab.js
-var hasReturned = false;
-var eventSent = false;
-var tabGrabbedEventSent = false;
-
-export function init(faviconUrl, pageTitle, controlPopulation, timeout) {
+function init(faviconUrl, pageTitle, controlPopulation, timeout) {
   var originalFavicon = document.querySelector("link[rel='icon']").href;
   var originalTitle = document.title;
+  var hasReturned = false;
+  var eventSent = false;
+  var tabGrabbedEventSent = false;
   document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "hidden" && !hasReturned) {
       if (!eventSent) {
@@ -27,18 +25,24 @@ export function init(faviconUrl, pageTitle, controlPopulation, timeout) {
           document.querySelector("link[rel='icon']").href = originalFavicon;
           document.title = originalTitle;
         }, timeout * 2);
-        window.addEventListener("focus", function() {
-          clearInterval(interval);
-          hasReturned = true;
-          if (!tabGrabbedEventSent) {
-            dataLayer.push({
-              event: "Tab Grabbed",
-              variant: variant
-            });
-            tabGrabbedEventSent = true;
-          }
-        });
       }
+      window.addEventListener("focus", function() {
+        clearInterval(interval);
+        hasReturned = true;
+        if (!tabGrabbedEventSent) {
+          dataLayer.push({
+            event: "Tab Grabbed",
+            variant: variant
+          });
+          tabGrabbedEventSent = true;
+        }
+      });
     }
   });
 }
+
+module.exports = {
+  TabGrab: {
+    init: init
+  }
+};
